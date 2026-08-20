@@ -9,7 +9,7 @@ export function TopNav() {
     <header className="sticky top-0 z-30 border-b border-line/80 bg-canvas/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-6">
         <div className="flex items-center gap-4">
-          <span className="font-serif text-[19px] italic leading-none text-ink">
+          <span className="font-sans text-[19px] font-extrabold leading-none tracking-tight text-ink">
             incentiv<span className="text-accent">.</span>
           </span>
           <span className="h-4 w-px bg-line" />
