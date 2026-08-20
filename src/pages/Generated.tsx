@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { CheckIcon, CopyIcon, DownloadIcon, FileTextIcon } from 'lucide-react';
 import { AgreementDocument } from '../components/preview/AgreementDocument';
+import { LeadGateModal } from '../components/LeadGateModal';
 import { partiesLine } from '../utils/agreement';
 import { formatShortDate } from '../utils/format';
+import { agreementFilename, buildAgreementDocx, downloadBlob } from '../utils/exportDocx';
+import { printAgreementToPdf } from '../utils/exportPdf';
+import { hasCapturedLead, saveLead } from '../utils/leads';
 import { GradientText } from '../components/ui/GradientText';
 import type { AgreementState } from '../types/sar';
 
@@ -11,13 +15,46 @@ interface Props {
   onEdit: () => void;
 }
 
+type PendingDownload = 'word' | 'pdf' | null;
+
 export function Generated({ state, onEdit }: Props) {
   const parties = partiesLine(state);
   const [copied, setCopied] = useState(false);
+  const [downloadingWord, setDownloadingWord] = useState(false);
+  const [pendingDownload, setPendingDownload] = useState<PendingDownload>(null);
 
   const handleCopy = () => {
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);
+  };
+
+  const runDownload = async (kind: 'word' | 'pdf') => {
+    if (kind === 'word') {
+      setDownloadingWord(true);
+      try {
+        const blob = await buildAgreementDocx(state);
+        downloadBlob(blob, agreementFilename(state, 'docx'));
+      } finally {
+        setDownloadingWord(false);
+      }
+    } else {
+      printAgreementToPdf();
+    }
+  };
+
+  const requestDownload = (kind: 'word' | 'pdf') => {
+    if (hasCapturedLead()) {
+      runDownload(kind);
+    } else {
+      setPendingDownload(kind);
+    }
+  };
+
+  const handleLeadSubmit = (lead: {name: string;workmail: string;}) => {
+    saveLead(lead);
+    const kind = pendingDownload;
+    setPendingDownload(null);
+    if (kind) runDownload(kind);
   };
 
   return (
@@ -39,13 +76,16 @@ export function Generated({ state, onEdit }: Props) {
       <div className="mt-8 flex flex-wrap items-center gap-2">
         <button
           type="button"
-          className="inline-flex h-10 items-center gap-2 rounded bg-accent px-4 text-[13.5px] font-medium text-white transition-colors duration-150 ease-out hover:bg-accent-hover">
+          disabled={downloadingWord}
+          onClick={() => requestDownload('word')}
+          className="inline-flex h-10 items-center gap-2 rounded bg-accent px-4 text-[13.5px] font-medium text-white transition-colors duration-150 ease-out hover:bg-accent-hover disabled:opacity-60">
 
           <DownloadIcon className="h-4 w-4" />
-          Download Word
+          {downloadingWord ? 'Preparing…' : 'Download Word'}
         </button>
         <button
           type="button"
+          onClick={() => requestDownload('pdf')}
           className="inline-flex h-10 items-center gap-2 rounded border border-line bg-card px-4 text-[13.5px] font-medium text-ink transition-colors duration-150 ease-out hover:border-line-strong">
 
           <FileTextIcon className="h-4 w-4 text-ink-muted" />
@@ -72,7 +112,7 @@ export function Generated({ state, onEdit }: Props) {
         </button>
       </div>
 
-      <div className="mt-8 rounded border border-line bg-card px-14 py-14 shadow-doc">
+      <div className="print-area mt-8 rounded border border-line bg-card px-14 py-14 shadow-doc">
         <AgreementDocument state={state} full />
       </div>
 
@@ -80,6 +120,12 @@ export function Generated({ state, onEdit }: Props) {
         Generated from the information you provided. Consider having the final agreement reviewed by your legal
         or tax adviser before execution.
       </p>
+
+      <LeadGateModal
+        open={pendingDownload !== null}
+        onClose={() => setPendingDownload(null)}
+        onSubmit={handleLeadSubmit} />
+
     </div>);
 
 }
