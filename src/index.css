@@ -1,0 +1,59 @@
+/* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&family=Inter:wght@400;500;600;700&display=swap');
+
+/* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
+
+:root {
+  color-scheme: light;
+  --color-canvas: 253 252 249; /* #FDFCF9 */
+  --color-surface: 245 242 237; /* #F5F2ED */
+  --color-card: 255 255 255; /* #FFFFFF */
+  --color-line: 229 226 220; /* #E5E2DC */
+  --color-line-strong: 216 211 201; /* #D8D3C9 */
+  --color-ink: 26 26 26; /* #1A1A1A */
+  --color-ink-muted: 102 102 102; /* #666666 */
+  --color-ink-subtle: 140 140 140; /* #8C8C8C */
+  --color-success-deep: 21 128 61; /* #15803D */
+}
+
+.dark {
+  color-scheme: dark;
+  --color-canvas: 10 10 10; /* #0A0A0A */
+  --color-surface: 26 26 26; /* hsl(0 0% 10%) */
+  --color-card: 18 18 18; /* hsl(0 0% 7%) */
+  --color-line: 46 46 46; /* hsl(0 0% 18%) */
+  --color-line-strong: 61 61 61; /* hsl(0 0% 24%) */
+  --color-ink: 245 243 240; /* hsl(40 20% 95%) */
+  --color-ink-muted: 166 166 166; /* hsl(0 0% 65%) */
+  --color-ink-subtle: 117 117 117; /* hsl(0 0% 46%) */
+  --color-success-deep: 74 222 128; /* lightened for dark-surface legibility */
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  background-color: rgb(var(--color-canvas));
+  color: rgb(var(--color-ink));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+.doc-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.doc-scroll::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--color-line));
+  border-radius: 999px;
+}
+.doc-scroll::-webkit-scrollbar-track {
+  background-color: transparent;
+}
